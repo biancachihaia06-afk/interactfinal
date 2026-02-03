@@ -6,57 +6,18 @@
   <style> 
     body { margin: 0; font-family: 'Segoe UI', sans-serif; overflow: hidden; background-color: #000005; } 
     
-    /* UI: Glassmorphism Style */
     #controls {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        background: rgba(20, 20, 30, 0.6);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        padding: 20px;
-        border-radius: 16px;
-        color: white;
-        z-index: 100;
+        position: absolute; top: 20px; left: 20px; width: 240px;
+        background: rgba(20, 20, 30, 0.7);
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        padding: 20px; border-radius: 16px; color: white;
         border: 1px solid rgba(255, 255, 255, 0.1);
-        width: 240px;
         box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        transition: opacity 0.3s;
     }
-
-    #controls:hover { opacity: 1; }
-    
-    h3 { margin: 0 0 15px 0; font-weight: 600; letter-spacing: 1px; color: #fff; text-transform: uppercase; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
-    
+    h3 { margin: 0 0 15px 0; color: #fff; font-size: 14px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
     .control-group { margin-bottom: 15px; }
-    label { display: block; font-size: 11px; margin-bottom: 8px; color: #aaa; letter-spacing: 0.5px; }
-    
-    /* Custom Range Slider */
-    input[type=range] {
-        -webkit-appearance: none;
-        width: 100%;
-        background: transparent;
-    }
-    input[type=range]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        height: 14px;
-        width: 14px;
-        border-radius: 50%;
-        background: #fff;
-        cursor: pointer;
-        margin-top: -5px;
-        box-shadow: 0 0 10px rgba(255,255,255,0.8);
-    }
-    input[type=range]::-webkit-slider-runnable-track {
-        width: 100%;
-        height: 4px;
-        cursor: pointer;
-        background: rgba(255,255,255,0.2);
-        border-radius: 2px;
-    }
-
-    .value-display { float: right; color: #4deeea; font-weight: bold; font-size: 12px; }
-    
+    label { display: block; font-size: 11px; margin-bottom: 5px; color: #aaa; }
+    input[type=range] { width: 100%; cursor: pointer; }
     .legend-item { display: flex; align-items: center; margin-bottom: 5px; font-size: 11px; color: #ccc; }
     .dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
   </style>
@@ -69,79 +30,61 @@
 <body>
   <div id="controls">
     <h3>Network Control</h3>
+    <div class="control-group">
+      <label>Lungime Link: <span id="val-dist">40</span></label>
+      <input type="range" id="linkDistance" min="10" max="200" value="40">
+    </div>
+    <div class="control-group">
+      <label>Gravitație: <span id="val-charge">-20</span></label>
+      <input type="range" id="chargeForce" min="-200" max="0" value="-20">
+    </div>
     
-    <div class="control-group">
-      <label>LINK LENGTH <span id="val-dist" class="value-display">40</span></label>
-      <input type="range" id="linkDistance" min="0" max="150" value="40">
-    </div>
-
-    <div class="control-group">
-      <label>GRAVITY (Repel) <span id="val-charge" class="value-display">-20</span></label>
-      <input type="range" id="chargeForce" min="-150" max="0" value="-20">
-    </div>
-
-    <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top:10px;">
-        <div class="legend-item"><div class="dot" style="background:#00f3ff; box-shadow: 0 0 8px #00f3ff;"></div>Zona 1 (Arad/Timis)</div>
-        <div class="legend-item"><div class="dot" style="background:#bd00ff; box-shadow: 0 0 8px #bd00ff;"></div>Zona 2A (Sud)</div>
-        <div class="legend-item"><div class="dot" style="background:#ff0055; box-shadow: 0 0 8px #ff0055;"></div>Zona 2B (Bucuresti)</div>
-        <div class="legend-item"><div class="dot" style="background:#00ff2a; box-shadow: 0 0 8px #00ff2a;"></div>Zona 3 (Transilvania)</div>
-        <div class="legend-item"><div class="dot" style="background:#ffcc00; box-shadow: 0 0 8px #ffcc00;"></div>Zona 4 (Moldova)</div>
+    <div style="margin-top:15px; border-top:1px solid #444; padding-top:10px;">
+       <div class="legend-item"><div class="dot" style="background:#00f3ff"></div>Zona 1</div>
+       <div class="legend-item"><div class="dot" style="background:#bd00ff"></div>Zona 2A</div>
+       <div class="legend-item"><div class="dot" style="background:#ff0055"></div>Zona 2B</div>
+       <div class="legend-item"><div class="dot" style="background:#00ff2a"></div>Zona 3</div>
+       <div class="legend-item"><div class="dot" style="background:#ffcc00"></div>Zona 4</div>
+       <div class="legend-item"><div class="dot" style="background:#ffffff"></div>Necunoscut/Altul</div>
     </div>
   </div>
 
   <div id="3d-graph"></div>
 
   <script>
-    const gData = {"nodes": [{"id": "Interact Club Arad", "group": "1", "val": 2.5}, {"id": "Interact Club Buzias", "group": "1", "val": 2.5}, {"id": "Interact Club Oradea", "group": "1", "val": 2.5}, {"id": "Interact Club Oradea Art Nouveau", "group": "1", "val": 2.5}, {"id": "Interact Club Satu Mare", "group": "1", "val": 2.5}, {"id": "Interact Club Satu Mare Samus", "group": "1", "val": 2.5}, {"id": "Interact Club Timisoara Cetate", "group": "1", "val": 2.5}, {"id": "Interact Club Bucure?ti Triumph", "group": "2B", "val": 3.5}, {"id": "Interact Club Sf. Sava Curtea Veche", "group": "2B", "val": 3.5}, {"id": "Interact Club Bucure?ti Central", "group": "2B", "val": 3.5}, {"id": "Interact Club T\u00e2rgu Mure? Rena?terea", "group": "3", "val": 3.5}, {"id": "Interact Club T\u00e2rgu Mure?", "group": "3", "val": 3.5}, {"id": "Interact Club Cluj-Napoca Visio", "group": "3", "val": 7.0}, {"id": "Interact Club Cluj-Napoca Transilvania", "group": "3", "val": 6.0}, {"id": "Interact Club Cluj-Napoca Samvs", "group": "3", "val": 7.0}, {"id": "Interact Club Cluj-Napoca Cet\u00e3?uie", "group": "3", "val": 4.5}, {"id": "Interact Club Cluj-Napoca", "group": "3", "val": 8.5}, {"id": "Interact Club Suceava Cetate", "group": "4", "val": 2.5}, {"id": "Interact Club Suceava Bucovina", "group": "4", "val": 2.5}, {"id": "Interact Club Piatra Neam? Camena", "group": "4", "val": 2.5}, {"id": "Interact Club Cetatea Neam?ului T\u00e2rgu Neam?", "group": "4", "val": 2.5}], "links": [{"source": "Interact Club Arad", "target": "Interact Club Arad Cetate", "project": "\u0093beyond the grave\u0094"}, {"source": "Interact Club Buzias", "target": "Interact Club Timisoara Cetate", "project": "\u0094jocul cuvintelor\u0094"}, {"source": "Interact Club Oradea", "target": "Interact Club Oradea Art Nouveau", "project": "\u0094ghiozdanOK\u0094"}, {"source": "Interact Club Satu Mare", "target": "Interact Club Satu Mare Samus", "project": "\u0094murder mystery\u0094"}, {"source": "Interact Club Bucure?ti Triumph", "target": "Interact Club Pipera", "project": "\u0094Hex Party\u0094"}, {"source": "Interact Club Bucure?ti Triumph", "target": "Interact Club Bucure?ti Central", "project": "\u0094Hex Party\u0094"}, {"source": "Interact Club Bucure?ti Triumph", "target": "Interact Club Sf. Sava Curtea Veche", "project": "\u0094Hex Party\u0094"}, {"source": "Interact Club Sf. Sava Curtea Veche", "target": "Interact Club Pipera", "project": "\u0094Hex Party\u0094"}, {"source": "Interact Club Sf. Sava Curtea Veche", "target": "Interact Club Bucure?ti Central", "project": "\u0094Hex Party\u0094"}, {"source": "Interact Club Bucure?ti Central", "target": "Interact Club Pipera", "project": "\u0094Hex Party\u0094"}, {"source": "Interact Club T\u00e2rgu Mure? Rena?terea", "target": "Interact Club T\u00e2rgu Mure?", "project": "\u0093Christmas Party\u0094"}, {"source": "Interact Club T\u00e2rgu Mure? Rena?terea", "target": "Interact Club T\u00e2rgu Mure?", "project": "\u0093Halloween Party\u0094"}, {"source": "Interact Club T\u00e2rgu Mure? Rena?terea", "target": "Interact Club T\u00e2rgu Mure?", "project": "\u0093Tiki Party\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca Samvs", "project": "\u0093A wish for santa\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca Samvs", "project": "\u0093Carve it out\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca Samvs", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca Transilvania", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Transilvania", "target": "Interact Club Cluj-Napoca", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Transilvania", "target": "Interact Club Cluj-Napoca Cet\u00e3?uie", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Transilvania", "target": "Interact Club Cluj-Napoca Samvs", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Samvs", "target": "Interact Club Cluj-Napoca", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca", "target": "Interact Club Cluj-Napoca", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Samvs", "target": "Interact Club Cluj-Napoca Cet\u00e3?uie", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Cet\u00e3?uie", "target": "Interact Club Cluj-Napoca", "project": "\u0093City Quest x Murder Mystery\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca Samvs", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca Transilvania", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Transilvania", "target": "Interact Club Cluj-Napoca", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Transilvania", "target": "Interact Club Cluj-Napoca Cet\u00e3?uie", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Transilvania", "target": "Interact Club Cluj-Napoca Samvs", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Samvs", "target": "Interact Club Cluj-Napoca", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca", "target": "Interact Club Cluj-Napoca", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Samvs", "target": "Interact Club Cluj-Napoca Cet\u00e3?uie", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Suceava Cetate", "target": "Interact Club Suceava Bucovina", "project": "\u0093Party Caritabil\u0094"}, {"source": "Interact Club Piatra Neam? Camena", "target": "Interact Club Cetatea Neam?ului T\u00e2rgu Neam?", "project": "\u0093Tab\u00e3r\u00e3 RYLA\u0094"}]};
+    const gData = {"nodes": [{"id": "Interact Club Arad", "group": "1", "val": 2}, {"id": "Interact  Club Arad Cetate", "group": "1", "val": 1}, {"id": "Interact Club Buzias", "group": "1", "val": 2}, {"id": "Interact Club Caransebes", "group": "1", "val": 1}, {"id": "Interact Club Curtici", "group": "1", "val": 1}, {"id": "Interact Club Drobeta", "group": "1", "val": 1}, {"id": "Interact Club Deva", "group": "1", "val": 1}, {"id": "Interact Club Hunedoara", "group": "1", "val": 1}, {"id": "Interact Club Hateg", "group": "1", "val": 1}, {"id": "Interact Club Jimbolia", "group": "1", "val": 1}, {"id": "Interact Club Marghita", "group": "1", "val": 1}, {"id": "Interact Club Oradea", "group": "1", "val": 2}, {"id": "Interact Club Oradea Art Nouveau", "group": "1", "val": 2}, {"id": "Interact Club Petrosani", "group": "1", "val": 1}, {"id": "Interact Club Resita", "group": "1", "val": 1}, {"id": "Interact Club Satu Mare", "group": "1", "val": 2}, {"id": "Interact Club Satu Mare Samus", "group": "1", "val": 2}, {"id": "Interact Club Timisoara", "group": "1", "val": 1}, {"id": "Interact Club Timisoara Cetate", "group": "1", "val": 2}, {"id": "Interact Club Timisoara Cosmopolitan", "group": "1", "val": 1}, {"id": "Interact Club Timisoara Opera", "group": "1", "val": 1}, {"id": "Interact Club Timisoara Ripensis", "group": "1", "val": 1}, {"id": "Interact Club T\u00e2rgu-Jiu", "group": "2A", "val": 1}, {"id": "Interact Club T\u00e2rgovi?te", "group": "2A", "val": 1}, {"id": "Interact Club Slatina", "group": "2A", "val": 1}, {"id": "Interact Club R\u00e2mnicu V\u00e2lcea Cozia", "group": "2A", "val": 1}, {"id": "Interact Club R\u00e2mnicu V\u00e2lcea", "group": "2A", "val": 1}, {"id": "Interact Club Pite?ti Leaders", "group": "2A", "val": 1}, {"id": "Interact Club Pite?ti", "group": "2A", "val": 1}, {"id": "Interact Club Giurgiu Danubius", "group": "2A", "val": 1}, {"id": "Interact Club Craiova", "group": "2A", "val": 1}, {"id": "Interact Club Alexandria", "group": "2A", "val": 1}, {"id": "Interact Club Bucure?ti Unity", "group": "2B", "val": 1}, {"id": "Interact Club Bucure?ti Triumph", "group": "2B", "val": 4}, {"id": "Interact Club Sf. Sava Curtea Veche", "group": "2B", "val": 4}, {"id": "Interact Club Bucure?ti Pipera", "group": "2B", "val": 1}, {"id": "Interact Club Bucure?ti Octo", "group": "2B", "val": 1}, {"id": "Interact Club Bucure?ti Nord Ion Creang\u00e3", "group": "2B", "val": 1}, {"id": "Interact Club Bucure?ti Nord", "group": "2B", "val": 1}, {"id": "Interact Club Bucure?ti Mihai Viteazul Curtea Veche", "group": "2B", "val": 1}, {"id": "Interact Club Bucure?ti Levant", "group": "2B", "val": 1}, {"id": "Interact Club Bucure?ti Heritage", "group": "2B", "val": 1}, {"id": "Interact Bucure?ti Goethe Curtea Veche", "group": "2B", "val": 1}, {"id": "Interact Club Bucure?ti Central", "group": "2B", "val": 4}, {"id": "Interact Club Bucure?ti Atheneum", "group": "2B", "val": 1}, {"id": "Interact Club Bucure?ti Ad Astra", "group": "2B", "val": 1}, {"id": "Interact Club Bucure?ti", "group": "2B", "val": 1}, {"id": "Interact Club Vi?eu de Sus", "group": "3", "val": 1}, {"id": "Interact Club Turda Potaissa", "group": "3", "val": 1}, {"id": "Interact Club T\u00e2rgu Mure? Rena?terea", "group": "3", "val": 4}, {"id": "Interact Club T\u00e2rgu Mure? Teka", "group": "3", "val": 1}, {"id": "Interact Club T\u00e2rgu Mure? Maris", "group": "3", "val": 1}, {"id": "Interact Club T\u00e2rgu Mure?", "group": "3", "val": 4}, {"id": "Interact Club T\u00e2rgu L\u00e3pu?", "group": "3", "val": 1}, {"id": "Interact Club Sighi?oara", "group": "3", "val": 1}, {"id": "Interact Club Sighetu Marma?iei", "group": "3", "val": 1}, {"id": "Interact Club Sibiu Cibinium", "group": "3", "val": 1}, {"id": "Interact Club Sibiu", "group": "3", "val": 1}, {"id": "Interact Club Sebe?", "group": "3", "val": 1}, {"id": "Interact\u00a0 Club Odorhei", "group": "3", "val": 1}, {"id": "Interact Club Media?", "group": "3", "val": 1}, {"id": "Interact Club Gherla", "group": "3", "val": 1}, {"id": "Interact Club Dej", "group": "3", "val": 1}, {"id": "Interact Club Cugir", "group": "3", "val": 1}, {"id": "Interact Club Cluj-Napoca Visio", "group": "3", "val": 11}, {"id": "Interact Club Cluj-Napoca Transilvania", "group": "3", "val": 9}, {"id": "Interact Club Cluj-Napoca Samvs", "group": "3", "val": 11}, {"id": "Interact Club Cluj-Napoca Cet\u00e3?uie", "group": "3", "val": 6}, {"id": "Interact Club Cluj-Napoca", "group": "3", "val": 14}, {"id": "Interact Club Kronstadt", "group": "3", "val": 1}, {"id": "Interact Club Bra?ov", "group": "3", "val": 1}, {"id": "Interact Club Blaj", "group": "3", "val": 1}, {"id": "Interact Club Bistri?a Nosa", "group": "3", "val": 1}, {"id": "Interact Club Baia Mare Colegiul de Arte", "group": "3", "val": 1}, {"id": "Interact Club Baia Mare Abstract", "group": "3", "val": 1}, {"id": "Interact Club Baia Mare", "group": "3", "val": 1}, {"id": "Interact Club Baia Mare Liceul Interna?ional", "group": "3", "val": 1}, {"id": "Interact Club Alba Iulia", "group": "3", "val": 1}, {"id": "Interact Club Aiud", "group": "3", "val": 1}, {"id": "Interact Club Vaslui", "group": "4", "val": 1}, {"id": "Interact Club Suceava Cetate", "group": "4", "val": 2}, {"id": "Interact Club Suceava Bucovina", "group": "4", "val": 2}, {"id": "Interact Club Piatra Neam? Camena", "group": "4", "val": 2}, {"id": "Interact Club Piatra Neam?", "group": "4", "val": 1}, {"id": "Interact Club One?ti", "group": "4", "val": 1}, {"id": "Interact Club Ia?i Junimea", "group": "4", "val": 1}, {"id": "Interact Club Ia?i Curtea Domneasc\u00e3", "group": "4", "val": 1}, {"id": "Interact Club Ia?i Copou", "group": "4", "val": 1}, {"id": "Interact Club Ia?i 2000", "group": "4", "val": 1}, {"id": "Interact Club Ia?i", "group": "4", "val": 1}, {"id": "Interact Club F\u00e3lticeni", "group": "4", "val": 1}, {"id": "Interact Club Chi?in\u00e3u Triumph", "group": "4", "val": 1}, {"id": "Interact Club Chi?in\u00e3u", "group": "4", "val": 1}, {"id": "Interact Club Cetatea Neam?ului T\u00e2rgu Neam?", "group": "4", "val": 2}, {"id": "Interact Club Boto?ani", "group": "4", "val": 1}, {"id": "Interact Club B\u00e2rlad", "group": "4", "val": 1}, {"id": "Interact Club Bac\u00e3u", "group": "4", "val": 1}, {"id": "Interact Club G\u00e3g\u00e3uzia", "group": "4", "val": 1}, {"id": "Interact Club Slobozia", "group": "5", "val": 1}, {"id": "Interact Club Ploie?ti Pluvia", "group": "5", "val": 1}, {"id": "Interact Club Ploie?ti", "group": "5", "val": 1}, {"id": "Interact Club Mangalia", "group": "5", "val": 1}, {"id": "Interact Club Gala?i Perseus", "group": "5", "val": 1}, {"id": "Interact Club Gala?i", "group": "5", "val": 1}, {"id": "Interact Club Delta Tulcea", "group": "5", "val": 1}, {"id": "Interact Club Foc?ani Varna", "group": "5", "val": 1}, {"id": "Interact Club Constan?a Pontus Euxinus", "group": "5", "val": 1}, {"id": "Interact Club Constan?a Yachting", "group": "5", "val": 1}, {"id": "Interact Club Constan?a Cetatea Tomis", "group": "5", "val": 1}, {"id": "Interact Club C\u00e3l\u00e3ra?i", "group": "5", "val": 1}, {"id": "Interact Club Buz\u00e3u", "group": "5", "val": 1}, {"id": "Interact Club Br\u00e3ila", "group": "5", "val": 1}, {"id": "Interact Club Arad Cetate", "group": "Necunoscut", "val": 2}, {"id": "Interact Club Pipera", "group": "Necunoscut", "val": 4}], "links": [{"source": "Interact Club Arad", "target": "Interact Club Arad Cetate", "project": "\u0093beyond the grave\u0094"}, {"source": "Interact Club Buzias", "target": "Interact Club Timisoara Cetate", "project": "\u0094jocul cuvintelor\u0094"}, {"source": "Interact Club Oradea", "target": "Interact Club Oradea Art Nouveau", "project": "\u0094ghiozdanOK\u0094"}, {"source": "Interact Club Satu Mare", "target": "Interact Club Satu Mare Samus", "project": "\u0094murder mystery\u0094"}, {"source": "Interact Club Bucure?ti Triumph", "target": "Interact Club Pipera", "project": "\u0094Hex Party\u0094"}, {"source": "Interact Club Bucure?ti Triumph", "target": "Interact Club Bucure?ti Central", "project": "\u0094Hex Party\u0094"}, {"source": "Interact Club Bucure?ti Triumph", "target": "Interact Club Sf. Sava Curtea Veche", "project": "\u0094Hex Party\u0094"}, {"source": "Interact Club Sf. Sava Curtea Veche", "target": "Interact Club Pipera", "project": "\u0094Hex Party\u0094"}, {"source": "Interact Club Sf. Sava Curtea Veche", "target": "Interact Club Bucure?ti Central", "project": "\u0094Hex Party\u0094"}, {"source": "Interact Club Bucure?ti Central", "target": "Interact Club Pipera", "project": "\u0094Hex Party\u0094"}, {"source": "Interact Club T\u00e2rgu Mure? Rena?terea", "target": "Interact Club T\u00e2rgu Mure?", "project": "\u0093Christmas Party\u0094"}, {"source": "Interact Club T\u00e2rgu Mure? Rena?terea", "target": "Interact Club T\u00e2rgu Mure?", "project": "\u0093Halloween Party\u0094"}, {"source": "Interact Club T\u00e2rgu Mure? Rena?terea", "target": "Interact Club T\u00e2rgu Mure?", "project": "\u0093Tiki Party\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca Samvs", "project": "\u0093A wish for santa\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca Samvs", "project": "\u0093Carve it out\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca Samvs", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca Transilvania", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Transilvania", "target": "Interact Club Cluj-Napoca", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Transilvania", "target": "Interact Club Cluj-Napoca Cet\u00e3?uie", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Transilvania", "target": "Interact Club Cluj-Napoca Samvs", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Samvs", "target": "Interact Club Cluj-Napoca", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca", "target": "Interact Club Cluj-Napoca", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Samvs", "target": "Interact Club Cluj-Napoca Cet\u00e3?uie", "project": "\u0093Final Race\u0094"}, {"source": "Interact Club Cluj-Napoca Cet\u00e3?uie", "target": "Interact Club Cluj-Napoca", "project": "\u0093City Quest x Murder Mystery\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca Samvs", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Visio", "target": "Interact Club Cluj-Napoca Transilvania", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Transilvania", "target": "Interact Club Cluj-Napoca", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Transilvania", "target": "Interact Club Cluj-Napoca Cet\u00e3?uie", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Transilvania", "target": "Interact Club Cluj-Napoca Samvs", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Samvs", "target": "Interact Club Cluj-Napoca", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca", "target": "Interact Club Cluj-Napoca", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Cluj-Napoca Samvs", "target": "Interact Club Cluj-Napoca Cet\u00e3?uie", "project": "\u0093Conferin?a Districtual\u00e3 de Toamn\u00e3\u0094"}, {"source": "Interact Club Suceava Cetate", "target": "Interact Club Suceava Bucovina", "project": "\u0093Party Caritabil\u0094"}, {"source": "Interact Club Piatra Neam? Camena", "target": "Interact Club Cetatea Neam?ului T\u00e2rgu Neam?", "project": "\u0093Tab\u00e3r\u00e3 RYLA\u0094"}]};
 
-    // --- PALETA DE CULORI NEON ---
     const zoneColors = {
-        "1": "#00f3ff",   // Cyan Neon
-        "2A": "#bd00ff",  // Purple Neon
-        "2B": "#ff0055",  // Pink Neon
-        "3": "#00ff2a",   // Green Neon
-        "4": "#ffcc00",   // Gold Neon
-        "default": "#ffffff"
+        "1": "#00f3ff", "2A": "#bd00ff", "2B": "#ff0055",
+        "3": "#00ff2a", "4": "#ffcc00", "Necunoscut": "#ffffff", "default": "#ffffff"
     };
-
-    const getColor = (zone) => zoneColors[zone] || zoneColors["default"];
+    const getColor = (z) => zoneColors[z] || zoneColors["default"];
 
     const Graph = ForceGraph3D()
       (document.getElementById('3d-graph'))
         .graphData(gData)
-        .backgroundColor('#000005') // Dark Space Blue
-        .showNavInfo(false) // Ascunde textul de jos
-        
-        // --- NODURI (Visuals) ---
+        .backgroundColor('#000005')
         .nodeLabel('id')
         .nodeColor(node => getColor(node.group))
         .nodeVal('val')
-        .nodeRelSize(4) // Mărimea relativă a bilelor
-        .nodeResolution(20) // Bile mai fine
+        .nodeRelSize(4)
         .nodeOpacity(0.9)
-        
-        // --- LEGĂTURI (Links) ---
+        .nodeResolution(16)
         .linkWidth(0.5)
-        .linkColor(() => 'rgba(255,255,255,0.2)') // Linii subtile
-        .linkDirectionalParticles(2) // Particule de trafic
-        .linkDirectionalParticleWidth(2.5)
-        .linkDirectionalParticleSpeed(0.005)
-        .linkDirectionalParticleColor(() => '#ffffff') // Particule albe strălucitoare
-        .linkLabel(link => `<div style="color: black; background: white; padding: 2px 5px; border-radius: 3px;">Proiect: ${link.project}</div>`)
-
-        // --- CAMERA ---
+        .linkColor(() => 'rgba(255,255,255,0.2)')
+        .linkDirectionalParticles(2)
+        .linkDirectionalParticleWidth(2)
+        .linkLabel(link => `Proiect: ${link.project}`)
         .onNodeClick(node => {
-          // Fly to node
-          const distance = 40;
+          const distance = 60;
           const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
           Graph.cameraPosition(
             { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, 
-            node, 
-            3000
+            node, 3000
           );
         });
 
-    // --- LOGICA DE CONTROL (Physics) ---
+    // Funcții Slider
     const updateLinkDistance = (val) => {
         document.getElementById('val-dist').innerText = val;
         Graph.d3Force('link').distance(parseInt(val));
@@ -152,58 +95,28 @@
         Graph.d3Force('charge').strength(parseInt(val));
         Graph.numDimensions(3);
     };
+    
     document.getElementById('linkDistance').addEventListener('input', (e) => updateLinkDistance(e.target.value));
     document.getElementById('chargeForce').addEventListener('input', (e) => updateCharge(e.target.value));
 
-    // --- EFECTE SPECIALE (Scene Customization) ---
-    
-    // 1. Setări inițiale Physics
+    // Initializare
     setTimeout(() => {
         Graph.d3Force('link').distance(40);
         Graph.d3Force('charge').strength(-20);
-    }, 500);
+    }, 1000);
 
-    // 2. Adăugare Starfield (Câmp de stele)
+    // Adăugare Stele (Starfield)
     const scene = Graph.scene();
-    
-    // Creăm 1500 de stele random
     const starsGeometry = new THREE.BufferGeometry();
-    const starsCount = 1500;
+    const starsCount = 2000;
     const posArray = new Float32Array(starsCount * 3);
-    
-    for(let i = 0; i < starsCount * 3; i++) {
-        // Coordonate random între -2000 și 2000
-        posArray[i] = (Math.random() - 0.5) * 4000; 
-    }
-    
+    for(let i=0; i<starsCount*3; i++) posArray[i] = (Math.random()-0.5)*5000;
     starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    const starsMaterial = new THREE.PointsMaterial({
-        size: 2,
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.8,
-        sizeAttenuation: true
-    });
-    
-    const starField = new THREE.Points(starsGeometry, starsMaterial);
+    const starField = new THREE.Points(starsGeometry, new THREE.PointsMaterial({size: 2, color: 0xffffff}));
     scene.add(starField);
 
-    // 3. Auto-Rotație Cinematică
-    let angle = 0;
-    setInterval(() => {
-      // Rotim camera doar dacă utilizatorul nu interacționează
-      // Notă: Această funcție este simplă, pentru efect complex e nevoie de controls.update
-      // Vom roti scena ușor în schimb
-      starField.rotation.y += 0.0003;
-      starField.rotation.x += 0.0001;
-    }, 20);
-
-    // 4. Adăugare Lumini (Lighting)
-    const ambientLight = new THREE.AmbientLight(0xbbbbbb);
-    scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
-    directionalLight.position.set(1, 1, 1);
-    scene.add(directionalLight);
+    // Rotatie lentă
+    setInterval(() => { starField.rotation.y += 0.0002; }, 20);
 
   </script>
 </body>
